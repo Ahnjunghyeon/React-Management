@@ -6,54 +6,40 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import { withStyles } from "@mui/material/withStyles";
+import { styled } from "@mui/material/styles";
 import "./App.css";
 
-const styles = (theme) => ({
-  root: {
-    width: "100%",
-    marginTop: theme.spacing.unit * 3,
-    overflowX: "auto",
-  },
-  table: {
-    minWidth: 1080,
-  },
+const Root = styled(Paper)(({ theme }) => ({
+  width: "100%",
+  marginTop: theme.spacing(3),
+  overflowX: "auto",
+}));
+
+const StyledTable = styled(Table)({
+  minWidth: 1080,
 });
 
-const customers = [
-  {
-    id: 1,
-    image: "https://placeimg.com/64/64/any",
-    name: "안중현",
-    birthday: "990704",
-    gender: "남자",
-    gob: "취준생",
-  },
-  {
-    id: 2,
-    image: "https://placeimg.com/64/64/2",
-    name: "홍길이",
-    birthday: "898989",
-    gender: "여자",
-    gob: "프로그랭",
-  },
-  {
-    id: 3,
-    image: "https://placeimg.com/64/64/3",
-    name: "박박이",
-    birthday: "721212",
-    gender: "남자",
-    gob: "백숙",
-  },
-];
-
 class App extends Component {
+  state = {
+    customers: "",
+  };
+
+  componentDidMount() {
+    this.callApi()
+      .then((res) => this.setState({ cumstomers: res }))
+      .catch((err) => console.log(err));
+  }
+
+  callApi = async () => {
+    const response = await fetch("/api/customers");
+  };
+
   render() {
     const { classes } = this.props;
     return (
       <>
-        <Paper className={classes.root}>
-          <Table className={classes.table}>
+        <Root>
+          <StyledTable>
             <TableHead>
               <TableRow>
                 <TableCell>번호</TableCell>
@@ -65,25 +51,27 @@ class App extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {customers.map((c) => {
-                return (
-                  <Customer
-                    key={c.id}
-                    id={c.id}
-                    image={c.image}
-                    name={c.name}
-                    birthday={c.birthday}
-                    gender={c.gender}
-                    job={c.job}
-                  />
-                );
-              })}
+              {this.state.customers
+                ? this.state.customers.map((c) => {
+                    return (
+                      <Customer
+                        key={c.id}
+                        id={c.id}
+                        image={c.image}
+                        name={c.name}
+                        birthday={c.birthday}
+                        gender={c.gender}
+                        job={c.job}
+                      />
+                    );
+                  })
+                : ""}
             </TableBody>
-          </Table>
-        </Paper>
+          </StyledTable>
+        </Root>
       </>
     );
   }
 }
 
-export default withStyles(styles)(App);
+export default App;
