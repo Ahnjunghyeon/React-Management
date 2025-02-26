@@ -21,21 +21,32 @@ const StyledTable = styled(Table)({
 
 class App extends Component {
   state = {
-    customers: "",
+    customers: [],
   };
 
   componentDidMount() {
     this.callApi()
-      .then((res) => this.setState({ cumstomers: res }))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (res) {
+          this.setState({ customers: res });
+        }
+      })
+      .catch((err) => console.error("API 호출 실패:", err));
   }
 
   callApi = async () => {
-    const response = await fetch("/api/customers");
+    try {
+      const response = await fetch("/api/customers");
+      if (!response.ok) {
+        throw new Error(`서버 오류: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("API 요청 중 오류 발생:", error);
+    }
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <>
         <Root>
@@ -51,21 +62,19 @@ class App extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.state.customers
-                ? this.state.customers.map((c) => {
-                    return (
-                      <Customer
-                        key={c.id}
-                        id={c.id}
-                        image={c.image}
-                        name={c.name}
-                        birthday={c.birthday}
-                        gender={c.gender}
-                        job={c.job}
-                      />
-                    );
-                  })
-                : ""}
+              {this.state.customers.length > 0
+                ? this.state.customers.map((c) => (
+                    <Customer
+                      key={c.id}
+                      id={c.id}
+                      image={c.image}
+                      name={c.name}
+                      birthday={c.birthday}
+                      gender={c.gender}
+                      job={c.job}
+                    />
+                  ))
+                : "로딩 중..."}
             </TableBody>
           </StyledTable>
         </Root>
