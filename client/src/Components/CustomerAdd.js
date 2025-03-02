@@ -16,9 +16,22 @@ class CustomerAdd extends React.Component {
 
   handleFormSubmit = (e) => {
     e.preventDefault();
-    this.addCustomer().then((response) => {
-      console.log(response.data);
-    });
+    this.addCustomer()
+      .then((response) => {
+        console.log(response.data);
+        this.setState({
+          file: null,
+          userName: "",
+          birthday: "",
+          gender: "",
+          job: "",
+          fileName: "",
+        });
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("추가 실패:", error);
+      });
   };
 
   handleFileChange = (e) => {
@@ -38,10 +51,10 @@ class CustomerAdd extends React.Component {
     const url = "/api/customers";
     const formData = new FormData();
     formData.append("image", this.state.file);
-    formData.append("name", this.state.file);
-    formData.append("birthday", this.state.file);
-    formData.append("gender", this.state.file);
-    formData.append("job", this.state.file);
+    formData.append("name", this.state.userName);
+    formData.append("birthday", this.state.birthday);
+    formData.append("gender", this.state.gender);
+    formData.append("job", this.state.job);
     const config = {
       headers: {
         "content-type": "multipart/form-data",
@@ -55,13 +68,7 @@ class CustomerAdd extends React.Component {
       <form onSubmit={this.handleFormSubmit}>
         <h1>고객 추가</h1>
         프로필 이미지:{" "}
-        <input
-          type="file"
-          name="file"
-          file={this.state.file}
-          value={this.state.fileName}
-          onChange={this.handleFileChange}
-        />
+        <input type="file" name="file" onChange={this.handleFileChange} />
         <br />
         이름 :{" "}
         <input
