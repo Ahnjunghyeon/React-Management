@@ -28,9 +28,26 @@ const ProgressContainer = styled("div")({
 });
 
 class App extends Component {
-  state = {
-    customers: [],
-    completed: 0,
+  constructor(props) {
+    super(props);
+    this.state = {
+      customers: "",
+      completed: 0,
+    };
+  }
+
+  stateRefresh = () => {
+    this.setState({
+      customers: "",
+      completed: 0,
+    });
+    this.callApi()
+      .then((res) => {
+        if (res) {
+          this.setState({ customers: res });
+        }
+      })
+      .catch((err) => console.error("API 호출 실패:", err));
   };
 
   componentDidMount() {
@@ -108,7 +125,7 @@ class App extends Component {
           </StyledTable>
         </Root>
 
-        <CustomerAdd />
+        <CustomerAdd stateRefresh={this.stateRefresh} />
       </div>
     );
   }
