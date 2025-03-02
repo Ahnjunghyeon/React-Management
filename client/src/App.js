@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import Customer from "./Components/Customer";
+import CustomerAdd from "./Components/CustomerAdd";
+import "./App.css";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
@@ -8,7 +10,6 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
-import "./App.css";
 
 const Root = styled(Paper)({
   width: "100%",
@@ -65,46 +66,50 @@ class App extends Component {
 
   render() {
     return (
-      <Root>
-        <StyledTable>
-          <TableHead>
-            <TableRow>
-              <TableCell>번호</TableCell>
-              <TableCell>이미지</TableCell>
-              <TableCell>이름</TableCell>
-              <TableCell>생년월일</TableCell>
-              <TableCell>성별</TableCell>
-              <TableCell>직업</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {this.state.customers.length > 0 ? (
-              this.state.customers.map((c) => (
-                <Customer
-                  key={c.id}
-                  id={c.id}
-                  image={c.image}
-                  name={c.name}
-                  birthday={c.birthday}
-                  gender={c.gender}
-                  job={c.job}
-                />
-              ))
-            ) : (
+      <div>
+        <Root>
+          <StyledTable>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan="6">
-                  <ProgressContainer>
-                    <CircularProgress
-                      variant="indeterminate"
-                      value={this.state.completed}
-                    />
-                  </ProgressContainer>
-                </TableCell>
+                <TableCell>번호</TableCell>
+                <TableCell>이미지</TableCell>
+                <TableCell>이름</TableCell>
+                <TableCell>생년월일</TableCell>
+                <TableCell>성별</TableCell>
+                <TableCell>직업</TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </StyledTable>
-      </Root>
+            </TableHead>
+            <TableBody>
+              {this.state.customers.length > 0 ? (
+                this.state.customers.map((c) => (
+                  <Customer
+                    key={c.id}
+                    id={c.id}
+                    image={c.image}
+                    name={c.name}
+                    birthday={c.birthday}
+                    gender={c.gender}
+                    job={c.job}
+                  />
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan="6">
+                    <ProgressContainer>
+                      <CircularProgress
+                        variant="indeterminate"
+                        value={this.state.completed}
+                      />
+                    </ProgressContainer>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </StyledTable>
+        </Root>
+
+        <CustomerAdd />
+      </div>
     );
   }
 }
