@@ -1,5 +1,20 @@
 import React from "react";
 import axios from "axios";
+import {
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  Button,
+  TextField,
+  styled,
+} from "@mui/material";
+
+const styles = (theme) => ({
+  hidden: {
+    display: "none",
+  },
+});
 
 class CustomerAdd extends React.Component {
   constructor(props) {
@@ -11,7 +26,10 @@ class CustomerAdd extends React.Component {
       gender: "",
       job: "",
       fileName: "",
+      open: false,
     };
+    // `fileInput` ref 초기화
+    this.fileInput = React.createRef();
   }
 
   handleFormSubmit = (e) => {
@@ -28,8 +46,8 @@ class CustomerAdd extends React.Component {
           gender: "",
           job: "",
           fileName: "",
+          open: false,
         });
-        window.location.reload();
       })
       .catch((error) => {
         console.error("추가 실패:", error);
@@ -39,7 +57,7 @@ class CustomerAdd extends React.Component {
   handleFileChange = (e) => {
     this.setState({
       file: e.target.files[0],
-      fileName: e.target.value,
+      fileName: e.target.files[0]?.name || "",
     });
   };
 
@@ -65,47 +83,103 @@ class CustomerAdd extends React.Component {
     return axios.post(url, formData, config);
   };
 
+  handleClickOpen = () => {
+    this.setState({
+      open: true,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      file: null,
+      userName: "",
+      birthday: "",
+      gender: "",
+      job: "",
+      fileName: "",
+      open: false,
+    });
+  };
+
   render() {
     return (
-      <form onSubmit={this.handleFormSubmit}>
-        <h1>고객 추가</h1>
-        프로필 이미지:{" "}
-        <input type="file" name="file" onChange={this.handleFileChange} />
-        <br />
-        이름 :{" "}
-        <input
-          type="text"
-          name="userName"
-          value={this.state.userName}
-          onChange={this.handleValueChange}
-        />
-        <br />
-        생년월일:{" "}
-        <input
-          type="text"
-          name="birthday"
-          value={this.state.birthday}
-          onChange={this.handleValueChange}
-        />
-        <br />
-        성별:{" "}
-        <input
-          type="text"
-          name="gender"
-          value={this.state.gender}
-          onChange={this.handleValueChange}
-        />
-        <br />
-        직업:{" "}
-        <input
-          type="text"
-          name="job"
-          value={this.state.job}
-          onChange={this.handleValueChange}
-        />
-        <br />
-        <button type="submit">추가하기</button>
-      </form>
+      <div>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.handleClickOpen}
+        >
+          고객 추가하기
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose}>
+          <DialogTitle>고객추가</DialogTitle>
+          <DialogContent>
+            <input
+              style={{ display: "none" }}
+              accept="image/*"
+              type="file"
+              ref={this.fileInput}
+              onChange={this.handleFileChange}
+            />
+            <Button
+              variant="contained"
+              onClick={() => this.fileInput.current.click()}
+            >
+              {this.state.fileName === ""
+                ? "프로필 이미지 선택"
+                : this.state.fileName}
+            </Button>
+            <br />
+            <TextField
+              label="이름"
+              type="text"
+              name="userName"
+              value={this.state.userName}
+              onChange={this.handleValueChange}
+            />
+            <br />
+            <TextField
+              label="생년월일"
+              type="text"
+              name="birthday"
+              value={this.state.birthday}
+              onChange={this.handleValueChange}
+            />
+            <br />
+            <TextField
+              label="성별"
+              type="text"
+              name="gender"
+              value={this.state.gender}
+              onChange={this.handleValueChange}
+            />
+            <br />
+            <TextField
+              label="직업"
+              type="text"
+              name="job"
+              value={this.state.job}
+              onChange={this.handleValueChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              onClick={this.handleFormSubmit}
+              color="primary"
+            >
+              추가하기
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={this.handleClose}
+              color="secondary"
+            >
+              닫기
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     );
   }
 }
