@@ -6,6 +6,7 @@ import {
   DialogContent,
   Button,
   Typography,
+  icons,
 } from "@mui/material";
 
 class CustomerDelete extends React.Component {
