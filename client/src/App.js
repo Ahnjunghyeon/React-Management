@@ -12,13 +12,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { styled, alpha } from "@mui/material/styles";
 
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import CustomerDelete from "./Components/CustomerDelete"; // 추가
 
 const Root = styled(Paper)({
   width: "100%",
@@ -106,6 +106,7 @@ class App extends Component {
     this.state = {
       customers: "",
       completed: 0,
+      searchKeyword: "",
     };
   }
 
@@ -113,6 +114,7 @@ class App extends Component {
     this.setState({
       customers: "",
       completed: 0,
+      searchKeyword: "",
     });
     this.callApi()
       .then((res) => {
@@ -154,7 +156,40 @@ class App extends Component {
     }));
   };
 
+  handleValueChange = (e) => {
+    let nextState = {};
+    nextState[e.target.name] = e.target.value;
+    this.setState(nextState);
+  };
+
   render() {
+    const filteredComponents = (data) => {
+      data = data.filter((c) => {
+        return c.name.indexOf(this.state.searchKeyword) > -1;
+      });
+      return data.map((c) => {
+        return (
+          <TableRow key={c.id}>
+            <TableCell>{c.id}</TableCell>
+            <TableCell>
+              <img
+                src={c.image}
+                alt={c.name}
+                style={{ width: 50, height: 50 }}
+              />
+            </TableCell>
+            <TableCell>{c.name}</TableCell>
+            <TableCell>{c.birthday}</TableCell>
+            <TableCell>{c.gender}</TableCell>
+            <TableCell>{c.job}</TableCell>
+            <TableCell>
+              <CustomerDelete stateRefresh={this.stateRefresh} id={c.id} />{" "}
+            </TableCell>
+          </TableRow>
+        );
+      });
+    };
+
     const cellList = [
       "번호",
       "프로필 이미지",
@@ -192,6 +227,9 @@ class App extends Component {
               <StyledInputBase
                 placeholder="검색하기"
                 inputProps={{ "aria-label": "search" }}
+                name="searchKeyword"
+                value={this.state.searchKeyword}
+                onChange={this.handleValueChange}
               />
             </Search>
           </Toolbar>
@@ -211,18 +249,7 @@ class App extends Component {
             </TableHead>
             <TableBody>
               {this.state.customers.length > 0 ? (
-                this.state.customers.map((c) => (
-                  <Customer
-                    stateRefresh={this.stateRefresh}
-                    key={c.id}
-                    id={c.id}
-                    image={c.image}
-                    name={c.name}
-                    birthday={c.birthday}
-                    gender={c.gender}
-                    job={c.job}
-                  />
-                ))
+                filteredComponents(this.state.customers)
               ) : (
                 <TableRow>
                   <TableCell colSpan="6">
